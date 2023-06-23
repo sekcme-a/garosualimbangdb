@@ -1,0 +1,15 @@
+.main_container{
+  margin-top: 10px;
+  margin-left: 9px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+}
+
+.dialog_container{
+  padding: 10px 20px;
+}
+.dialog_container h1{
+  font-weight: bold;
+}

@@ -1,0 +1,42 @@
+.main_container{
+  padding: 10px 15px;
+}
+
+.list_container{
+  margin-top: 20px;
+  height: 500px;
+  overflow-y: scroll;
+  border: 1px solid black;
+}
+.list_container li{
+  display: flex;
+  padding: 10px;
+  cursor: pointer;
+  border-bottom: 1px solid #999;
+  transition: .7s;
+}
+.list_container li:hover{
+  background-color: rgb(222,222,222);
+}
+.list_container li h1{
+  padding: 0 10px;
+  font-weight: bold;
+
+}
+.list_container li h2{
+  padding: 0 10px;
+}
+
+
+.dialog_container{
+  padding: 10px 15px;
+}
+.dialog_container h1{
+  width: 100%;
+  font-weight: bold;
+  font-size: 20px;
+}
+.dialog_container p{
+  margin-top: 10px;
+  width: 100%;
+}

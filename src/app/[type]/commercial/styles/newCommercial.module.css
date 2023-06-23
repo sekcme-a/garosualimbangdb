@@ -1,0 +1,91 @@
+.dialog_container{
+  padding: 10px 15px;
+}
+.list_container li{
+  padding: 5px 0;
+  border-bottom: 1px solid #999;
+  cursor: pointer;
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
+}
+.list_container h1{
+  font-weight: bold;
+  padding-right: 10px
+}
+.list_container h2{
+  padding-right: 10px
+}
+.list_container h3{
+  padding-right: 10px;
+}
+.list_container p{
+  font-size: 12px;
+}
+
+
+.img_container{
+  padding: 10px 23px;
+}
+.img_container h1{
+  margin-top: 20px;
+  font-weight: bold;
+  font-size: 18px;
+}
+
+.commercial_dialog_container img{
+  width: 100%;
+  height: 100%;
+  position: relative !important;
+  object-fit: cover;
+}
+
+
+.company_container{
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  border-bottom: 5px solid black;
+  padding: 10px 30px;
+  width: 100%;
+}
+.company_container h1{
+  font-weight: bold;
+  width: 100%;
+  font-size: 20px;
+}
+.company_container1{
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  /* border-bottom: 5px solid black; */
+  padding: 10px 30px;
+}
+.company_container1 h1{
+  font-weight: bold;
+  width: 100%;
+  font-size: 20px;
+}
+
+.input_container{
+  display: flex;
+  flex-wrap: wrap;
+  padding: 5px;
+  border: 3px solid black;
+  border-radius: 5px;
+  margin-top: 5px;
+}
+.bank_container{
+  max-height: 180px;
+  overflow-y: scroll;
+  margin: 15px 0;
+  border: 1px solid black;
+  border-radius: 3px;
+  /* width: 300px; */
+}
+.bank_container li{
+  display: flex;
+  flex-wrap: wrap;
+  padding: 2px 0;
+  border-bottom: 1px solid #999;
+}

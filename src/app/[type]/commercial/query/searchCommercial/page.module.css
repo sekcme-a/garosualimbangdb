@@ -1,0 +1,32 @@
+.list_container{
+  padding: 10px 10px;
+  
+}
+
+.list_container li{
+  display: flex;
+  padding: 5px 10px;
+  border: 1px solid black;
+  margin-top: 5px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: .5s;
+  align-items: center;
+}
+.list_container li:hover{
+  background-color: rgb(222,222,222);
+}
+.list_container li h1{
+  font-weight: bold;
+  padding: 0 10px;
+}
+.list_container li h2{
+  padding: 0 10px;
+}
+.list_container li h3{
+  padding: 0 15px;
+
+}
+.list_container li p{
+  font-size: 13px;
+}

@@ -1,0 +1,33 @@
+.main_container{
+  /* width: 100%; */
+  padding: 5px;
+  border-bottom: 1px solid #999;
+  margin-bottom: 15px;
+  display: flex;
+}
+
+.button{
+  cursor: pointer;
+  padding: 7px 15px;
+  transition: .5s;
+  font-weight: bold;
+  margin-right: 13px;
+  border-radius: 5px;
+}
+.garosu{
+  color: green;
+}
+.alimbang{
+  color: blue;
+}
+.setting{
+  color: purple;
+}
+.logout{
+  color: gray;
+  /* font-size: 12px; */
+}
+.selected{
+  background-color: black;
+  color: white;
+}
