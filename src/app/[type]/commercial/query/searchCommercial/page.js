@@ -10,12 +10,13 @@ import Loader from "src/public/components/Loader"
 import { TextField, Button } from "@mui/material"
 
 import { getTime } from "src/public/utils/getTime"
+import { GAROSUDATA } from "data/garosu"
 
 
 
 
 const Component = ({params}) => {
-  const {commercial} = useData()
+  const {commercial, setSelectedDBId} = useData()
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(true)
   const [isSearching, setIsSearching] = useState(false)
@@ -46,6 +47,34 @@ const Component = ({params}) => {
       onSearchClick()
   }
   const onSearchClick = () => {
+
+    const createArrayThatHasValue = (arr, value) => {
+      const result = []
+      for(let i = 0 ; i < arr.length; i++){
+        for(let j = 0; j<arr[i].length; j++){
+          if(arr[i][j]?.includes(value)) {
+            result.push({
+              mode: "fromDB",
+              createdAt: arr[i][0],
+              name: arr[i][1],
+              content: arr[i][11],
+              phoneNumber: arr[i][12],
+              id: i
+            })
+          }
+        }
+      }
+      return result
+    }
+    const sortCreatedAtDesc = (arr) => {
+      arr.sort((a, b) => {
+        const dateA = new Date(a.createdAt);
+        const dateB = new Date(b.createdAt);
+        return dateB - dateA;
+      });
+      return arr
+    }
+
     if(values.commercial !== "") {
       console.log(commercial)
       setIsSearching(true)
@@ -59,8 +88,14 @@ const Component = ({params}) => {
           item.companyValues?.phoneNumber?.includes(INPUT))
           return(item)
       }).filter(Boolean)
-      console.log(result)
-      setCommercialList(result)
+      let DBQUERY = []
+      if(params.type==="garosu")
+        DBQUERY = createArrayThatHasValue(GAROSUDATA, INPUT)
+      else
+        DBQUERY = createArrayThatHasValue(ALIMBANG, INPUT)  
+      const SORTEDDBQUEYR = sortCreatedAtDesc(DBQUERY)
+      
+      setCommercialList([...result,...SORTEDDBQUEYR])
       setIsSearching(false)
     }
   }
@@ -68,6 +103,13 @@ const Component = ({params}) => {
 
   const onCommercialClick = (id) => {
     router.push(`/${params.type}/commercial/${id}`)
+  }
+
+  const onDBCommercialClick = (id) => {
+    setSelectedDBId({
+      type: params.type,
+      id: id
+    })
   }
 
   if(isLoading)
@@ -95,6 +137,7 @@ const Component = ({params}) => {
 
       <ul className={styles.list_container} style={{marginTop:"20px"}}>
         {commercialList.map((item, index) => {
+          if(item.mode!=="fromDB")
           return(
             <li key={index} onClick={()=>onCommercialClick(item.id)}>
               <h4>{item.mode}</h4>
@@ -104,6 +147,16 @@ const Component = ({params}) => {
               <p>마지막 저장일: {getTime.YYYYMMDD(item.savedAt)}</p>
             </li>
           )
+          else
+            return(
+              <li key={index} onClick={()=>onDBCommercialClick(item.id)}>
+              <h4>DB데이터</h4>
+              <h1>광고주명: {item.name}</h1>
+              <h2>{item.content?.substr(0,30)}</h2>
+              <h3>{item.phoneNumber}</h3>
+              <p>접수일자: {item.createdAt}</p>
+            </li>
+            )
         })}
 
       </ul>

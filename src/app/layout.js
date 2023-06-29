@@ -7,6 +7,7 @@ import Navbar from 'src/public/components/Navbar';
 import DateOfToday from 'src/public/components/DateOfToday';
 import { DataProvider } from "context/data";
 import AuthStateChanged from 'hooks/AuthStateChanged';
+import Dialog from "public/components/Dialog"
 
 export const metadata = {
   title: '전산프로그램',
@@ -23,6 +24,7 @@ export default function RootLayout({ children }) {
             <DateOfToday />
             <Navbar />
             <div style={{padding: "10px 15px"}} className={inter.className}>{children}</div>
+            <Dialog />
           </AuthStateChanged>
         </DataProvider>
       </body>

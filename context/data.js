@@ -28,6 +28,8 @@ export function DataProvider(props){
   const [commercialTypes, setCommercialTypes] = useState([]) //광고 분류
   const [locationTypes, setLocationTypes] = useState([])//지역 분류
 
+  const [selectedDBId, setSelectedDBId] = useState(null)
+
   const router = useRouter()
 
 
@@ -88,6 +90,7 @@ export function DataProvider(props){
     commercial, setCommercial,
     commercialTypes, setCommercialTypes,
     locationTypes, setLocationTypes,
+    selectedDBId, setSelectedDBId,
   }
 
   if(isLoading)
