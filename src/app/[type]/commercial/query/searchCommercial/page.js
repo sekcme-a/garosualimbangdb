@@ -76,10 +76,9 @@ const Component = ({params}) => {
     }
 
     if(values.commercial !== "") {
-      console.log(commercial)
       setIsSearching(true)
       const INPUT = values.commercial
-      const result = commercial[params.type].map((item) => {
+      const result = commercial[params.type]?.map((item) => {
         if(item.title?.includes(INPUT) ||
           item.content?.includes(INPUT) ||
           item.phoneNumber?.includes(INPUT) ||
