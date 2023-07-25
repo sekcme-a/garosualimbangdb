@@ -73,7 +73,6 @@ export const firebaseHooks = {
           await db.collection(paths[0]).doc(paths[1]).collection(paths[2]).doc(paths[3]).collection(paths[4]).doc(paths[5]).collection(paths[6]).doc(paths[7]).collection(paths[8]).doc(paths[9]).set(data)
         else
           resolve(false)
-        alert("성공적으로 저장되었습니다.")
         resolve(true)
       } catch (e) {
         reject(e)
@@ -237,6 +236,17 @@ export const firebaseHooks = {
       }
     })
   },
+  
+  fetch_company_data_with_id: (id, type) => {
+    return new Promise ( async (resolve, reject) => {
+      try{
+        const doc = await db.collection("type").doc(type).collection("company").doc(id).get()
+        resolve(doc.data())
+      }catch(e){
+        reject(e)
+      }
+    })
+  }
 
 
   //=======다시

@@ -25,7 +25,13 @@ const Page = ({params}) => {
   const [inputedCompany, setInputedCompany] = useState("")
   const [isImgLoading, setIsImgLoading] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
-  const [companyValue, setCompanyValues] = useState()
+
+  const [companyValues, setCompanyValues] = useState({
+    name:"",
+    companyName:"",
+    phoneNumber:"",
+    memo:""
+  })
 
   //열기, 닫기
   const [isInfoOpen, setIsInfoOpen] = useState(false)
@@ -53,6 +59,10 @@ const Page = ({params}) => {
     publishHistory: [],
     unpaid:0,
     remain:"",
+    commercialType: "생산/기술",
+    locationType: "안산1",
+    newsType: "줄",
+    level: "일반 구인",
     info: [
       {title: '경력', content:'경력무관'},
       {title: '연령', content:'무관'},
@@ -97,12 +107,19 @@ const Page = ({params}) => {
   useEffect(()=>{
     const fetchData = async () => {
       const commercialData = await firebaseHooks.fetch_data(`type/${params.type}/commercials/${params.id}`)
-      console.log(commercialData)
-      if(commercialData)
+      if(commercialData){
         setValues(commercialData)
+      }
       else{
         alert("없는 광고입니다.")
         router.back()
+      }
+      const companyData = await firebaseHooks.fetch_company_data_with_id(commercialData.companyId, params.type)
+      if(companyData){
+        setCompanyValues(companyData)
+        console.log(companyData)
+      }else{
+        alert("없거나 삭제된 업체입니다. 업체를 다시 선택해주세요.")
       }
       setIsLoading(false)
     }
@@ -337,7 +354,7 @@ const Page = ({params}) => {
           <TextField
             label="업체명"
             variant="standard"
-            value={values.companyValues?.companyName}
+            value={companyValues?.companyName}
             size="small"
             fullWidth
           />
@@ -347,7 +364,7 @@ const Page = ({params}) => {
           <TextField
             label="광고주 명"
             variant="standard"
-            value={values.companyValues?.name}
+            value={companyValues?.name}
             size="small"
             fullWidth
           />
@@ -357,7 +374,7 @@ const Page = ({params}) => {
           <TextField
             label="업체 전화번호"
             variant="standard"
-            value={values.companyValues?.phoneNumber}
+            value={companyValues?.phoneNumber}
             size="small"
             fullWidth
           />
@@ -367,7 +384,7 @@ const Page = ({params}) => {
           <TextField
             label="업체 메모"
             variant="standard"
-            value={values.companyValues?.memo}
+            value={companyValues?.memo}
             size="small"
             fullWidth
             multiline
@@ -440,6 +457,7 @@ const Page = ({params}) => {
               onChange={onValuesChange("newsType")}
             >
                 <MenuItem value={"줄"}>줄</MenuItem>
+                <MenuItem value={"강조줄"}>강조줄</MenuItem>
                 <MenuItem value={"찬스"}>찬스</MenuItem>
                 <MenuItem value={"박스"}>박스</MenuItem>
                 <MenuItem value={"박스+줄"}>박스+줄</MenuItem>
@@ -458,9 +476,10 @@ const Page = ({params}) => {
               onChange={onValuesChange("level")}
             >
                 <MenuItem value={"일반 구인"}>일반 구인</MenuItem>
+                <MenuItem value={"일반+ 구인"}>일반+ 구인</MenuItem>
                 <MenuItem value={"스페셜 구인"}>스페셜 구인</MenuItem>
+                <MenuItem value={"스페셜+ 구인"}>스페셜+ 구인</MenuItem>
                 <MenuItem value={"프리미엄 구인"}>프리미엄 구인</MenuItem>
-                <MenuItem value={"프리미엄+ 구인"}>프리미엄+ 구인</MenuItem>
                 <MenuItem value={"긴급 구인"}>긴급 구인</MenuItem>
             </Select>
           </FormControl>

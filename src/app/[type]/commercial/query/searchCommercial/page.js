@@ -53,14 +53,24 @@ const Component = ({params}) => {
       for(let i = 0 ; i < arr.length; i++){
         for(let j = 0; j<arr[i].length; j++){
           if(arr[i][j]?.includes(value)) {
-            result.push({
-              mode: "fromDB",
-              createdAt: arr[i][0],
-              name: arr[i][1],
-              content: arr[i][11],
-              phoneNumber: arr[i][12],
-              id: i
-            })
+            if(arr[i][0]==="box value")
+              result.push({
+                mode:"fromBoxDB",
+                createdAt: arr[i][2],
+                name: arr[i][1],
+                type: arr[i][3],
+                size: arr[i][5],
+                id: i,
+              })
+            else
+              result.push({
+                mode: "fromDB",
+                createdAt: arr[i][0],
+                name: arr[i][1],
+                content: arr[i][11],
+                phoneNumber: arr[i][12],
+                id: i
+              })
           }
         }
       }
@@ -90,8 +100,8 @@ const Component = ({params}) => {
       let DBQUERY = []
       if(params.type==="garosu")
         DBQUERY = createArrayThatHasValue(GAROSUDATA, INPUT)
-      else
-        DBQUERY = createArrayThatHasValue(ALIMBANG, INPUT)  
+      // else
+      //   DBQUERY = createArrayThatHasValue(ALIMBANG, INPUT)  
       const SORTEDDBQUEYR = sortCreatedAtDesc(DBQUERY)
       
       setCommercialList([...result,...SORTEDDBQUEYR])
@@ -136,7 +146,7 @@ const Component = ({params}) => {
 
       <ul className={styles.list_container} style={{marginTop:"20px"}}>
         {commercialList.map((item, index) => {
-          if(item.mode!=="fromDB")
+          if(item.mode!=="fromDB" && item.mode!=="fromBoxDB")
           return(
             <li key={index} onClick={()=>onCommercialClick(item.id)}>
               <h4>{item.mode}</h4>
@@ -146,7 +156,7 @@ const Component = ({params}) => {
               <p>마지막 저장일: {getTime.YYYYMMDD(item.savedAt)}</p>
             </li>
           )
-          else
+          else if(item.mode==="fromDB")
             return(
               <li key={index} onClick={()=>onDBCommercialClick(item.id)}>
               <h4>DB데이터</h4>
@@ -156,6 +166,16 @@ const Component = ({params}) => {
               <p>접수일자: {item.createdAt}</p>
             </li>
             )
+          else if (item.mode==="fromBoxDB")
+              return(
+                <li key={index} onClick={()=>onDBCommercialClick(item.id)}>
+                <h4>DB박스 데이터</h4>
+                <h1>광고주명: {item.name}</h1>
+                <h2>광고분류: {item.type}</h2>
+                <h3>사이즈: {item.size}</h3>
+                <p>접수일자: {item.createdAt}</p>
+              </li>
+              )
         })}
 
       </ul>

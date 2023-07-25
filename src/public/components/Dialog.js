@@ -43,7 +43,58 @@ const Dialog = () => {
           x
         </div>  
       </div>
-      {!isHide && selectedDBId.type==="garosu" ? 
+      {!isHide && selectedDBId.type==="garosu" && GAROSUDATA[selectedDBId.id][0]==="box value" ? 
+      <>
+        <TextField
+          label="고객"
+          variant="standard"
+          value={GAROSUDATA[selectedDBId.id][1]}
+          size="small"
+        />
+        <TextField
+          label="접수일자"
+          variant="standard"
+          value={GAROSUDATA[selectedDBId.id][2]}
+          size="small"
+        />
+        <TextField
+          label="분류"
+          variant="standard"
+          value={GAROSUDATA[selectedDBId.id][3]}
+          size="small"
+        />
+        <TextField
+          label="횟수"
+          variant="standard"
+          value={GAROSUDATA[selectedDBId.id][4]}
+          size="small"
+        />
+        <TextField
+          label="사이즈"
+          variant="standard"
+          value={GAROSUDATA[selectedDBId.id][5]}
+          size="small"
+        />
+        <TextField
+          label="광고액"
+          variant="standard"
+          value={GAROSUDATA[selectedDBId.id][6]}
+          size="small"
+        />
+        <TextField
+          label="미수액"
+          variant="standard"
+          value={GAROSUDATA[selectedDBId.id][7]}
+          size="small"
+        />
+        <TextField
+          label="메모"
+          variant="standard"
+          value={GAROSUDATA[selectedDBId.id][8]}
+          size="small"
+        />
+      </>
+      : !isHide && 
       <>
         <TextField
           label="광고주명"
@@ -101,9 +152,6 @@ const Dialog = () => {
           value={GAROSUDATA[selectedDBId.id][12]}
           size="small"
         />
-      </>
-      :
-      <>
       </>
       }
     </div>

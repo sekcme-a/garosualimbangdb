@@ -17,7 +17,7 @@ import DropperImage from "src/public/components/DropperImage"
 import { firestore as db } from "firebase/firebase"
 
 const Page = ({params}) => {
-  const {company, schedule, todayDate, locationTypes, commercialTypes} = useData()
+  const {company, schedule, todayDate, locationTypes, commercialTypes, reloadCommercialData} = useData()
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(true)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
@@ -38,6 +38,8 @@ const Page = ({params}) => {
   const [deleteNumInput, setDeleteNumInput] = useState("")
   //초기 저장 후 금액 입력가능(update를 사용하기때문)
   const [hasSaved, setHasSaved] = useState(false)
+
+  const [mode, setMode] = useState("job")
 
 
   const [companyValues, setCompanyValues] = useState({
@@ -82,7 +84,10 @@ const Page = ({params}) => {
       {title: '접수방법', content:''},
     ],
     imgUrl:"",
-
+    commercialType: "생산/기술",
+    locationType: "안산1",
+    newsType: "줄",
+    level: "일반 구인",
   })
   const onValuesChange = (prop) => (event) => {
       setValues(prevValues => ({...prevValues, [prop]: event.target.value}))
@@ -109,6 +114,15 @@ const Page = ({params}) => {
     fetchData()
   },[])
 
+  useEffect(()=>{
+
+    if(values.commercialType==="자동차"){
+      setMode("car")
+    } else{
+      setMode("job")
+    }
+  },[values])
+
   // useEffect(()=>{
   //   const fetchData = async () => {
   //     const data = await firebaseHooks.fetch_data(`type/${params.type}/company/${values.companyId}`)
@@ -134,6 +148,7 @@ const Page = ({params}) => {
   const onSearchClick = () => {
     if(values.company !== "") {
       const INPUT = inputedCompany
+      console.log(company.garosu)
       const result = company[params.type].map((item) => {
         if(item.name.includes(INPUT) || item.companyName.includes(INPUT) || item.phoneNumber.includes(INPUT) )
           return(item)
@@ -145,8 +160,10 @@ const Page = ({params}) => {
   }
   const onCompanyClick =async (id) => {
     const data = await firebaseHooks.fetch_data(`type/${params.type}/company/${id}`)
-    if(data)
-      setValues({...values, companyValues: data})
+    if(data){
+      setValues({...values, companyId: id, companyValues: {...data}})
+      setCompanyValues({...data})
+    }
     else
       alert("없는 업체입니다.")
     setIsDialogOpen(false)
@@ -233,8 +250,10 @@ const Page = ({params}) => {
       ...values,
       savedAt: new Date()
     })
+    await reloadCommercialData()
     setIsSaving(false)
     setHasSaved(true)
+    alert("성공적으로 저장되었습니다.")
   }
 
 
@@ -252,7 +271,7 @@ const Page = ({params}) => {
           <TextField
             label="업체명"
             variant="standard"
-            value={values.companyValues.companyName}
+            value={companyValues.companyName}
             size="small"
             fullWidth
           />
@@ -262,7 +281,7 @@ const Page = ({params}) => {
           <TextField
             label="광고주 명"
             variant="standard"
-            value={values.companyValues.name}
+            value={companyValues.name}
             size="small"
             fullWidth
           />
@@ -272,7 +291,7 @@ const Page = ({params}) => {
           <TextField
             label="업체 전화번호"
             variant="standard"
-            value={values.companyValues.phoneNumber}
+            value={companyValues.phoneNumber}
             size="small"
             fullWidth
           />
@@ -282,7 +301,7 @@ const Page = ({params}) => {
           <TextField
             label="업체 메모"
             variant="standard"
-            value={values.companyValues.memo}
+            value={companyValues.memo}
             size="small"
             fullWidth
             multiline
@@ -556,51 +575,104 @@ const Page = ({params}) => {
         <Grid item xs={12}>
           <h1 style={{fontSize:"18px", fontWeight:"bold", marginTop:"10px"}}>메인내용</h1>
         </Grid>
-
-        <Grid item xs={12} sm={3}>
-          <TextField
-            label="급여"
-            fullWidth
-            variant="standard"
-            value={values.salary}
-            onChange={onValuesChange("salary")}
-            // multiline={false} rows={1} maxRows={1}
-            size="small"
-          />
-        </Grid>
-        <Grid item xs={12} sm={3}>
-          <TextField
-            label="요일"
-            fullWidth
-            variant="standard"
-            value={values.date}
-            onChange={onValuesChange("date")}
-            // multiline={false} rows={1} maxRows={1}
-            size="small"
-          />
-        </Grid>
-        <Grid item xs={12} sm={3}>
-          <TextField
-            label="시간"
-            fullWidth
-            variant="standard"
-            value={values.time}
-            onChange={onValuesChange("time")}
-            // multiline={false} rows={1} maxRows={1}
-            size="small"
-          />
-        </Grid>
-        <Grid item xs={12} sm={3}>
-          <TextField
-            label="지역"
-            fullWidth
-            variant="standard"
-            value={values.location}
-            onChange={onValuesChange("location")}
-            // multiline={false} rows={1} maxRows={1}
-            size="small"
-          />
-        </Grid>
+        {mode==="job" ? 
+          <>
+            <Grid item xs={12} sm={3}>
+              <TextField
+                label="급여"
+                fullWidth
+                variant="standard"
+                value={values.salary}
+                onChange={onValuesChange("salary")}
+                // multiline={false} rows={1} maxRows={1}
+                size="small"
+              />
+            </Grid>
+            <Grid item xs={12} sm={3}>
+              <TextField
+                label="요일"
+                fullWidth
+                variant="standard"
+                value={values.date}
+                onChange={onValuesChange("date")}
+                // multiline={false} rows={1} maxRows={1}
+                size="small"
+              />
+            </Grid>
+            <Grid item xs={12} sm={3}>
+              <TextField
+                label="시간"
+                fullWidth
+                variant="standard"
+                value={values.time}
+                onChange={onValuesChange("time")}
+                // multiline={false} rows={1} maxRows={1}
+                size="small"
+              />
+            </Grid>
+            <Grid item xs={12} sm={3}>
+              <TextField
+                label="지역"
+                fullWidth
+                variant="standard"
+                value={values.location}
+                onChange={onValuesChange("location")}
+                // multiline={false} rows={1} maxRows={1}
+                size="small"
+              />
+            </Grid>
+          </>
+          : mode==="car" ? 
+          <>
+            <Grid item xs={12} sm={3}>
+              <TextField
+                label="연식"
+                fullWidth
+                variant="standard"
+                value={values.salary}
+                onChange={onValuesChange("salary")}
+                // multiline={false} rows={1} maxRows={1}
+                size="small"
+              />
+            </Grid>
+            <Grid item xs={12} sm={3}>
+              <TextField
+                label="주행거리"
+                fullWidth
+                variant="standard"
+                value={values.date}
+                onChange={onValuesChange("date")}
+                // multiline={false} rows={1} maxRows={1}
+                size="small"
+              />
+            </Grid>
+            <Grid item xs={12} sm={3}>
+              <TextField
+                label="차종"
+                fullWidth
+                variant="standard"
+                value={values.time}
+                onChange={onValuesChange("time")}
+                // multiline={false} rows={1} maxRows={1}
+                size="small"
+              />
+            </Grid>
+            <Grid item xs={12} sm={3}>
+              <TextField
+                label="매매가"
+                fullWidth
+                variant="standard"
+                value={values.location}
+                onChange={onValuesChange("location")}
+                // multiline={false} rows={1} maxRows={1}
+                size="small"
+              />
+            </Grid>
+          </>
+          : 
+          <>
+          </>
+        }
       </Grid>
 
 

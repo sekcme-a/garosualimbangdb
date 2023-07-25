@@ -36,6 +36,7 @@ export function DataProvider(props){
   useEffect(()=>{
     const fetchData = async () => {
       console.log("fetching data")
+      try{
       const scheduleGarosu = await firebaseHooks.fetch_data("type/garosu/settings/schedule")
       const scheduleAlimbang = await firebaseHooks.fetch_data("type/alimbang/settings/schedule")
       if(scheduleGarosu!==undefined && scheduleGarosu.data.length>=1)
@@ -74,9 +75,25 @@ export function DataProvider(props){
         setLocationTypes(prev => ({...prev, alimbang: alimbangLocationType.data}))
       console.log(commercialTypes, locationTypes)
       setIsLoading(false)
+    }catch(e){
+      console.log(error)
+    }
     }
     fetchData()
   },[])
+
+  const reloadCommercialData = () => {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const commercialData = await firebaseHooks.fetch_commercial_data();
+        setCommercial(commercialData);
+        resolve();
+      } catch (error) {
+        reject(error);
+      }
+    });
+  };
+  
 
   const value = {
     type,
@@ -91,6 +108,7 @@ export function DataProvider(props){
     commercialTypes, setCommercialTypes,
     locationTypes, setLocationTypes,
     selectedDBId, setSelectedDBId,
+    reloadCommercialData
   }
 
   if(isLoading)

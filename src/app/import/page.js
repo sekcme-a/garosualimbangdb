@@ -79,11 +79,32 @@ function groupArray(arr, size) {
   return result;
 }
 
+const groupArrayGarosuBox = (arr) => {
+  console.log(arr)
+  let isLength = true
+  let result = []
+  for (let i = 0; i<arr.length; i++){
+    const arr2 = arr[i].split("\t") 
+    result.push([
+      "box value",
+      arr2[1],//고객 1
+      arr2[2],//접수일자 2
+      arr2[3],//분류 3
+      arr2[5],//횟수 4
+      arr2[6],//사이즈 5
+      arr2[7],//광고액 6
+      arr2[8],//미수액 7
+      arr2[13]//메모 8
+    ])
+  }
+  return result
+}
 
 const onImportClick = ()=>{
   const DATA = values.data
   const SPLITEDDATA = DATA.split("\n")
-  const GROUPEDDATA = groupArray(SPLITEDDATA, 3)
+  // const GROUPEDDATA = groupArray(SPLITEDDATA, 3)    //가로수 줄광고 형식
+  const GROUPEDDATA = groupArrayGarosuBox(SPLITEDDATA)
   console.log(GROUPEDDATA)
 
   // handleValues("importedData", data)
