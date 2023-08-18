@@ -84,13 +84,25 @@ const Page = ({params}) => {
       {title: '접수방법', content:''},
     ],
     imgUrl:"",
-    commercialType: "생산/기술",
-    locationType: "안산1",
+    commercialType: "기술/생산직",
+    locationType: "고잔1,2동",
     newsType: "줄",
     level: "일반 구인",
+    type:"구인"
   })
   const onValuesChange = (prop) => (event) => {
-      setValues(prevValues => ({...prevValues, [prop]: event.target.value}))
+    const jobTypes = ['기술/생산직','사무/경리','전문직','교사강사/교육정보','영업직','서비스직','운전직','배달직','현장직','아르바이트/기타구인','요리음식업','유흥서비스업']
+    const houseTypes = ['주택매매','주택임대','상가매매','상가임대','공장매매','공장임대','창고매매','창고임대','기타매매','기타임대']
+    const carTypes = ['현대','기아','르노코리아','쌍용','쉐보래(대우)','기타']
+    setValues(prevValues => ({...prevValues, [prop]: event.target.value}))
+    if(prop==="commercialType"){
+      if(jobTypes.includes(event.target.value))
+        handleValues("type", "구인")
+      else if(houseTypes.includes(event.target.value))
+        handleValues("type", "부동산")
+      else
+        handleValues("type", "중고차")
+    }
   }
   const handleValues = (type, value) => {
     setValues(prevValues => ({ ...prevValues, [type]: value }))
@@ -114,14 +126,7 @@ const Page = ({params}) => {
     fetchData()
   },[])
 
-  useEffect(()=>{
 
-    if(values.commercialType==="자동차"){
-      setMode("car")
-    } else{
-      setMode("job")
-    }
-  },[values])
 
   // useEffect(()=>{
   //   const fetchData = async () => {
@@ -148,12 +153,10 @@ const Page = ({params}) => {
   const onSearchClick = () => {
     if(values.company !== "") {
       const INPUT = inputedCompany
-      console.log(company.garosu)
       const result = company[params.type].map((item) => {
         if(item.name.includes(INPUT) || item.companyName.includes(INPUT) || item.phoneNumber.includes(INPUT) )
           return(item)
       }).filter(Boolean)
-      console.log(result)
       setCompanyList(result)
 
     }
@@ -202,7 +205,7 @@ const Page = ({params}) => {
 
   //마감 횟수 차감
   const onDeleteNumClick = async() => {
-    if(values.remain<deleteNumInput){
+    if(parseInt(values.remain)<parseInt(deleteNumInput)){
       alert("차감 횟수가 남은 마감횟수보다 큽니다.")
       return;
     }
@@ -221,15 +224,16 @@ const Page = ({params}) => {
       if(index===-1){
         alert("오늘 날짜를 찾을 수 없습니다.")
         return "알수없음"
-      }else if(schedule[params.type].length<=index+values.remain) {
+      }else if(schedule[params.type].length<=index+parseInt(values.remain)) {
         alert("등록된 회차가 너무 적습니다. 회차를 더 등록해주세요.")
         return "알수없음"
       }else{
         // console.log(index+values.remain)
-        return schedule[params.type][parseInt(index+values.remain)]
+        return schedule[params.type][index+parseInt(values.remain)]
       }
     }
   }
+
 
 
   function findIndex(value) {
@@ -392,9 +396,10 @@ const Page = ({params}) => {
               onChange={onValuesChange("level")}
             >
                 <MenuItem value={"일반 구인"}>일반 구인</MenuItem>
+                <MenuItem value={"일반+ 구인"}>일반+ 구인</MenuItem>
                 <MenuItem value={"스페셜 구인"}>스페셜 구인</MenuItem>
+                <MenuItem value={"스페셜+ 구인"}>스페셜+ 구인</MenuItem>
                 <MenuItem value={"프리미엄 구인"}>프리미엄 구인</MenuItem>
-                <MenuItem value={"프리미엄+ 구인"}>프리미엄+ 구인</MenuItem>
                 <MenuItem value={"긴급 구인"}>긴급 구인</MenuItem>
             </Select>
           </FormControl>
@@ -575,104 +580,50 @@ const Page = ({params}) => {
         <Grid item xs={12}>
           <h1 style={{fontSize:"18px", fontWeight:"bold", marginTop:"10px"}}>메인내용</h1>
         </Grid>
-        {mode==="job" ? 
-          <>
-            <Grid item xs={12} sm={3}>
-              <TextField
-                label="급여"
-                fullWidth
-                variant="standard"
-                value={values.salary}
-                onChange={onValuesChange("salary")}
-                // multiline={false} rows={1} maxRows={1}
-                size="small"
-              />
-            </Grid>
-            <Grid item xs={12} sm={3}>
-              <TextField
-                label="요일"
-                fullWidth
-                variant="standard"
-                value={values.date}
-                onChange={onValuesChange("date")}
-                // multiline={false} rows={1} maxRows={1}
-                size="small"
-              />
-            </Grid>
-            <Grid item xs={12} sm={3}>
-              <TextField
-                label="시간"
-                fullWidth
-                variant="standard"
-                value={values.time}
-                onChange={onValuesChange("time")}
-                // multiline={false} rows={1} maxRows={1}
-                size="small"
-              />
-            </Grid>
-            <Grid item xs={12} sm={3}>
-              <TextField
-                label="지역"
-                fullWidth
-                variant="standard"
-                value={values.location}
-                onChange={onValuesChange("location")}
-                // multiline={false} rows={1} maxRows={1}
-                size="small"
-              />
-            </Grid>
-          </>
-          : mode==="car" ? 
-          <>
-            <Grid item xs={12} sm={3}>
-              <TextField
-                label="연식"
-                fullWidth
-                variant="standard"
-                value={values.salary}
-                onChange={onValuesChange("salary")}
-                // multiline={false} rows={1} maxRows={1}
-                size="small"
-              />
-            </Grid>
-            <Grid item xs={12} sm={3}>
-              <TextField
-                label="주행거리"
-                fullWidth
-                variant="standard"
-                value={values.date}
-                onChange={onValuesChange("date")}
-                // multiline={false} rows={1} maxRows={1}
-                size="small"
-              />
-            </Grid>
-            <Grid item xs={12} sm={3}>
-              <TextField
-                label="차종"
-                fullWidth
-                variant="standard"
-                value={values.time}
-                onChange={onValuesChange("time")}
-                // multiline={false} rows={1} maxRows={1}
-                size="small"
-              />
-            </Grid>
-            <Grid item xs={12} sm={3}>
-              <TextField
-                label="매매가"
-                fullWidth
-                variant="standard"
-                value={values.location}
-                onChange={onValuesChange("location")}
-                // multiline={false} rows={1} maxRows={1}
-                size="small"
-              />
-            </Grid>
-          </>
-          : 
-          <>
-          </>
-        }
+        <Grid item xs={12} sm={3}>
+          <TextField
+            label={values.type==="구인" ? "급여" : values.type==="중고차" ? "매매가":"매매/임대가"}
+            fullWidth
+            variant="standard"
+            value={values.salary}
+            onChange={onValuesChange("salary")}
+            // multiline={false} rows={1} maxRows={1}
+            size="small"
+          />
+        </Grid>
+        <Grid item xs={12} sm={3}>
+          <TextField
+            label={values.type==="구인" ? "요일" : values.type==="중고차" ? "연식":"유형"}
+            fullWidth
+            variant="standard"
+            value={values.date}
+            onChange={onValuesChange("date")}
+            // multiline={false} rows={1} maxRows={1}
+            size="small"
+          />
+        </Grid>
+        <Grid item xs={12} sm={3}>
+          <TextField
+            label={values.type==="구인" ? "시간" : values.type==="중고차" ? "차종":"지역"}
+            fullWidth
+            variant="standard"
+            value={values.time}
+            onChange={onValuesChange("time")}
+            // multiline={false} rows={1} maxRows={1}
+            size="small"
+          />
+        </Grid>
+        <Grid item xs={12} sm={3}>
+          <TextField
+            label={values.type==="구인" ? "지역" : values.type==="중고차" ? "주행거리":"기타"}
+            fullWidth
+            variant="standard"
+            value={values.location}
+            onChange={onValuesChange("location")}
+            // multiline={false} rows={1} maxRows={1}
+            size="small"
+          />
+        </Grid>
       </Grid>
 
 
