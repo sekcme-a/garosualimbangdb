@@ -40,7 +40,7 @@ export default function AuthStateChanged({ children }) {
         setUser(null)
         setUserData(null)
         setIsLoading(false)
-        router.replace("/login")
+        router.push("/login")
       }
     })
     // const fetchData = async = () => {
