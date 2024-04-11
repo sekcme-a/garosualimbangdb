@@ -31,6 +31,6 @@
     "react-html-parser": "^2.0.2"
   },
   "devDependencies": {
-    "@netlify/plugin-nextjs": "^4.29.5-appdir.0"
+    "@netlify/plugin-nextjs": "^4.41.3"
   }
 }
