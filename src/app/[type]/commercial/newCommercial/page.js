@@ -152,8 +152,7 @@ const Page = ({params}) => {
       alert("빈칸 노노")
       return
     }
-    const obj = JSON.parse(copiedText)
-    console.log(obj)
+        const obj = JSON.parse(copiedText);
     setCompanyValues(prev => ({
       ...prev,
       companyName: obj.name,
