@@ -37,7 +37,7 @@ const Component = ({params}) => {
     const fetchData = async () => {
       const data = await db.collection("type").doc(params.type).collection("commercials")
         .where("mode","==","게재중")
-        .where("remain","<=",0)
+        .where("remain","<=",3)
         // .orderBy("remain", "desc")
         // .orderBy("publishedAt", "desc")
         .get()
@@ -91,6 +91,7 @@ const Component = ({params}) => {
           return(
             <li key={index} onClick={()=>onCommercialClick(item.id)}>
               <h4>{item.mode}</h4>
+              <h1>남은횟수: {item.remain}</h1>
               <h1>{item.title}</h1>
               <h2>{item.content}</h2>
               <h3>{item.phoneNumber}</h3>

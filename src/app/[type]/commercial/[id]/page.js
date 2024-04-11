@@ -122,18 +122,19 @@ const Page = ({params}) => {
       const commercialData = await firebaseHooks.fetch_data(`type/${params.type}/commercials/${params.id}`)
       if(commercialData){
         setValues(commercialData)
+        setCompanyValues(commercialData.companyValues)
       }
       else{
         alert("없는 광고입니다.")
         router.back()
       }
-      const companyData = await firebaseHooks.fetch_company_data_with_id(commercialData.companyId, params.type)
-      if(companyData){
-        setCompanyValues(companyData)
-        console.log(companyData)
-      }else{
-        alert("없거나 삭제된 업체입니다. 업체를 다시 선택해주세요.")
-      }
+      // const companyData = await firebaseHooks.fetch_company_data_with_id(commercialData.companyId, params.type)
+      // if(companyData){
+      //   setCompanyValues(companyData)
+      //   console.log(companyData)
+      // }else{
+      //   alert("없거나 삭제된 업체입니다. 업체를 다시 선택해주세요.")
+      // }
       setIsLoading(false)
     }
     fetchData()
@@ -224,6 +225,15 @@ const Page = ({params}) => {
     if(confirm("마감 횟수를 임의로 차감하시겠습니까?")){
       await firebaseHooks.delete_remain(params.type, params.id, values.remain, deleteNumInput)
       handleValues("remain", parseInt(values.remain)-parseInt(deleteNumInput))
+
+      const newHistory = values.publishHistory
+      newHistory.push(`${todayDate}일 에 잔여횟수 ${deleteNumInput}이 임의 차감되어 ${parseInt(values.remain)-parseInt(deleteNumInput)}회 남았습니다.`)
+      await db.collection("type").doc(params.type).collection("commercials").doc(params.id).update({
+        publishHistory: newHistory,
+      })
+      
+      
+      
       setDeleteNumInput("")
       alert("연재 횟수가 차감되었습니다.")
     }
@@ -263,6 +273,7 @@ const Page = ({params}) => {
     setIsSaving(true)
     await firebaseHooks.set_data(`type/${params.type}/commercials/${params.id}`, {
       ...values,
+      remain: parseInt(values.remain),
       savedAt: new Date()
     })
     setIsSaving(false)
@@ -280,9 +291,10 @@ const Page = ({params}) => {
       alert("잔여 횟수를 입력해주세요.")
     else if(confirm("해당 광고를 게재하시겠습니까?")){
       const newHistory = values.publishHistory
-      newHistory.push(`${todayDate}일 부터 게재되었습니다.`)
+      newHistory.push(`${todayDate}일 부터 잔여횟수 ${values.remain}회 게재시작되었습니다.`)
       await db.collection("type").doc(params.type).collection("commercials").doc(params.id).update({
         ...values,
+        remain: parseInt(values.remain),
         publishHistory: newHistory,
         mode: "게재중",
         publishedAt: new Date()
@@ -300,6 +312,7 @@ const Page = ({params}) => {
       newHistory.push(`${todayDate}일 부터 보류되었습니다.`)
       await db.collection("type").doc(params.type).collection("commercials").doc(params.id).update({
         ...values,
+        remain: parseInt(values.remain),
         publishHistory: newHistory,
         mode: "보류중",
         holdAt: new Date()
@@ -316,6 +329,7 @@ const Page = ({params}) => {
       newHistory.push(`${todayDate}일 부터 게재중지되었습니다.`)
       await db.collection("type").doc(params.type).collection("commercials").doc(params.id).update({
         ...values,
+        remain: parseInt(values.remain),
         publishHistory: newHistory,
         mode: "게재중지",
         unpublishedAt: new Date()

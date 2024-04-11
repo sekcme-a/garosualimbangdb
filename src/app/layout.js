@@ -21,6 +21,7 @@ export default function RootLayout({ children }) {
       <body style={{backgroundColor:"rgb(255, 244, 227)"}}>
         <DataProvider>
           <AuthStateChanged>
+            {/* <div style={{padding:'10px 14px'}} className={inter.className}>{children}</div> */}
             <DateOfToday />
             <Navbar />
             <div style={{padding: "10px 15px"}} className={inter.className}>{children}</div>

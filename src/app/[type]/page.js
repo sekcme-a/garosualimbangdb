@@ -31,8 +31,13 @@ const Component = ({params}) => {
   const handleError = (type, message) => { setError({type: type, message: message})}
   //for inputs*****
 
+  const [lastMagam, setLastMagam] = useState("")
+
   useEffect(()=>{
     const fetchData = async () => {
+      const magamDoc = await db.collection("type").doc(params.type).collection("datas").doc("magam").get()
+      const firestoreTimestamp = magamDoc.data().lastMagam.toDate()
+      if(magamDoc.exists) setLastMagam(`${firestoreTimestamp.getFullYear()}.${(firestoreTimestamp.getMonth() + 1).toString().padStart(2, '0')}.${firestoreTimestamp.getDate().toString().padStart(2, '0')} ${firestoreTimestamp.getHours().toString().padStart(2, '0')}:${firestoreTimestamp.getMinutes().toString().padStart(2, '0')}`)
       setIsLoading(false)
     }
     fetchData()
@@ -57,7 +62,11 @@ const Component = ({params}) => {
     if(confirm("마감하시겠습니까? 현재 게재중인 광고의 횟수가 1회씩 차감됩니다.")){
       // Call the async function
       updateDocuments()
-        .then(() => {
+        .then( async () => {
+          await db.collection("type").doc(params.type).collection("datas").doc('magam').set({
+            lastMagam: new Date()
+          })
+          setLastMagam(new Date().toISOString().replace(/T/, ' ').replace(/\..+/, '').replace(/-/g, '.'))
           alert("마감되었습니다.")
         })
         .catch((error) => {
@@ -166,6 +175,7 @@ const Component = ({params}) => {
           >
             횟수 마감
           </Button>
+          <p>마지막 마감일: {lastMagam}</p>
         </Grid>
 
 

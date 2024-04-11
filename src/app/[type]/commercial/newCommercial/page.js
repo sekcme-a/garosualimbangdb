@@ -25,6 +25,7 @@ const Page = ({params}) => {
   const [inputedCompany, setInputedCompany] = useState("")
   const [isImgLoading, setIsImgLoading] = useState(false)
   const [commercialId, setCommercialId] = useState("")
+  const [companyId, setCompanyId] = useState("")
   const [isSaving, setIsSaving] = useState(false)
 
   //열기, 닫기
@@ -39,7 +40,13 @@ const Page = ({params}) => {
   //초기 저장 후 금액 입력가능(update를 사용하기때문)
   const [hasSaved, setHasSaved] = useState(false)
 
+  const [copiedText, setCopiedText] = useState("")
+
   const [mode, setMode] = useState("job")
+
+  const [typeText, setTypeText] = useState("")
+
+  const [isPublishHistoryOpen, setIsPublishHistoryOpen] = useState(false)
 
 
   const [companyValues, setCompanyValues] = useState({
@@ -56,10 +63,15 @@ const Page = ({params}) => {
       phoneNumber:"",
       memo:""
     },
+    title: "",
+    memo:"",
+    content:"",
+    
     schedule: "",
     paidHistory: [],
     publishHistory: [],
     unpaid:0,
+    amount: 0,
     remain:0,
     info: [
       {title: '경력', content:'경력무관'},
@@ -85,7 +97,7 @@ const Page = ({params}) => {
     ],
     imgUrl:"",
     commercialType: "기술/생산직",
-    locationType: "고잔1,2동",
+    locationType: "시흥1",
     newsType: "줄",
     level: "일반 구인",
     type:"구인"
@@ -121,6 +133,10 @@ const Page = ({params}) => {
     const fetchData = async () => {
       const tempId = await firebaseHooks.get_random_id()
       setCommercialId(tempId)
+
+      const randomId = await firebaseHooks.get_random_id()
+      setCompanyId(randomId)
+
       setIsLoading(false)
     }
     fetchData()
@@ -128,17 +144,66 @@ const Page = ({params}) => {
 
 
 
-  // useEffect(()=>{
-  //   const fetchData = async () => {
-  //     const data = await firebaseHooks.fetch_data(`type/${params.type}/company/${values.companyId}`)
-  //     if(data)
-  //       setCompanyValues(data)
-  //     else
-  //       alert("없는 업체입니다.")
-  //   }
-  //   if(values.companyId)
-  //     fetchData()
-  // },[values.companyId])
+
+  const onCopiedTextToDataClick = () => {
+    
+    
+    if(copiedText===""){
+      alert("빈칸 노노")
+      return
+    }
+    const obj = JSON.parse(copiedText)
+    console.log(obj)
+    setCompanyValues(prev => ({
+      ...prev,
+      companyName: obj.name,
+      name: obj.client,
+      phoneNumber: obj.phoneNumber,
+      memo: ""
+    }))
+
+    setTypeText(obj.codeType)
+    
+    setValues(prev => ({
+      ...prev,
+      title: obj.content?.split(' ').slice(0, 3).join(' '),
+      memo: obj.memo,
+      content: obj.content,
+      paidHistory: [
+        obj.price&&
+         {
+          value: obj.price,
+          info: "(db)광고비",
+          unpaid: obj.price
+          },
+        obj.gived&&{
+          value: obj.gived,
+          info: "(db)광고비 입금",
+          unpaid: parseInt(obj.price)-parseInt(obj.gived)
+        },
+        obj.moneyLeft && obj.moneyLeft!=="0"&& parseInt(obj.moneyLeft) !== parseInt(obj.price)-parseInt(obj.gived) &&{
+          value: obj.moneyLeft,
+          info: `db상에 계산과 다른 미수금액 존재`,
+          unpaid: obj.moneyLeft
+        }
+      ],
+      amount: obj.amount,
+      remain: obj.used ? parseInt(obj.amount)-parseInt(obj.used) : obj.amount,
+      contact: [
+        {title: '담당자', content:obj.client},
+        {title: '연락처', content: obj.phoneNumber},
+        {title: 'FAX', content:''},
+        {title: '홈페이지', content:''},
+        {title: '접수방법', content:'전화 문의'},
+      ],
+      publishHistory: [
+        `${new Date().toISOString().slice(0, 10).replace(/-/g, '.')}에 어플 db에서 데이터 받음.`,
+        `발행시작일: ${obj.startAt} | 발행종료일: ${obj.lastAt} | 보류일: ${obj.stopAt} | 추가/취소일: ${obj.lastCondiAt}`
+      ]
+    }))
+    // setCopiedText("")
+
+  }
 
 
   const onSelectCompanyClick = () => {
@@ -157,6 +222,7 @@ const Page = ({params}) => {
         if(item.name.includes(INPUT) || item.companyName.includes(INPUT) || item.phoneNumber.includes(INPUT) )
           return(item)
       }).filter(Boolean)
+      console.log(company)
       setCompanyList(result)
 
     }
@@ -166,6 +232,7 @@ const Page = ({params}) => {
     if(data){
       setValues({...values, companyId: id, companyValues: {...data}})
       setCompanyValues({...data})
+      setCompanyId(id)
     }
     else
       alert("없는 업체입니다.")
@@ -252,6 +319,7 @@ const Page = ({params}) => {
     setIsSaving(true)
     await firebaseHooks.set_data(`type/${params.type}/commercials/${commercialId}`, {
       ...values,
+      companyValues: companyValues,
       savedAt: new Date()
     })
     await reloadCommercialData()
@@ -269,13 +337,33 @@ const Page = ({params}) => {
   
   return(
     <div className={styles.main_container}>
-           <Grid container spacing={3}>
+      <Grid container spacing={3}>
+
+        <Grid item xs={12} sm={11} width="100%">
+          <TextField
+            label="붙여넣기"
+            variant="standard"
+            value={copiedText}
+            size="small"
+            fullWidth
+            onChange={(e) => setCopiedText(e.target.value)}
+          />
+        </Grid>
+        <Grid item xs={12} sm={1} width='100%'>
+          <Button
+            variant="contained"
+            onClick={onCopiedTextToDataClick}
+          >
+            적용
+          </Button>
+        </Grid>
         
         <Grid item xs={12} sm={4} width="100%">
           <TextField
             label="업체명"
             variant="standard"
             value={companyValues.companyName}
+            onChange={(e)=>setCompanyValues(prev => ({...prev, companyName: e.target.value}))}
             size="small"
             fullWidth
           />
@@ -286,6 +374,7 @@ const Page = ({params}) => {
             label="광고주 명"
             variant="standard"
             value={companyValues.name}
+            onChange={(e)=>setCompanyValues(prev => ({...prev, name: e.target.value}))}
             size="small"
             fullWidth
           />
@@ -296,6 +385,7 @@ const Page = ({params}) => {
             label="업체 전화번호"
             variant="standard"
             value={companyValues.phoneNumber}
+            onChange={(e)=>setCompanyValues(prev => ({...prev, phoneNumber: e.target.value}))}
             size="small"
             fullWidth
           />
@@ -306,6 +396,7 @@ const Page = ({params}) => {
             label="업체 메모"
             variant="standard"
             value={companyValues.memo}
+            onChange={(e)=>setCompanyValues(prev => ({...prev, memo: e.target.value}))}
             size="small"
             fullWidth
             multiline
@@ -313,27 +404,34 @@ const Page = ({params}) => {
           />
         </Grid>
 
+        <DropperImage imgUrl={companyValues.logoUrl}
+          setImgURL={(url) => setCompanyValues(prev=>({...prev, logoUrl: url}))}
+          path={`${params.type}/logo/${companyId}`} setIsLoading={setIsImgLoading}/>
+
       </Grid>
 
-      <p style={{marginTop:"30px", fontSize:"17px", fontWeight:"bold"}}>업체 로고</p>
-        {values.companyValues.logoUrl &&
+      
+        {companyValues.logoUrl &&
+        <>
+        <p style={{marginTop:"30px", fontSize:"17px", fontWeight:"bold"}}>업체 로고</p>
           <div style={{maxWidth:"100px", height:"100px", position:"relative"}}>
             <Image
-              src={values.companyValues.logoUrl}
+              src={companyValues.logoUrl}
               alt="로고"
               style={{ objectFit: 'contain' }}
               fill
             />
           </div>
+          </>
         }
       
-      <Button
+      {/* <Button
         variant="contained"
         onClick={onSelectCompanyClick}
         sx={{mt:"10px"}}
       >
         광고주 선택
-      </Button>
+      </Button> */}
 
       <Grid container spacing={3}>
         <Grid item xs={12} sm={3} >
@@ -343,11 +441,13 @@ const Page = ({params}) => {
               value={values.commercialType}
               label="광고 분류"
               onChange={onValuesChange("commercialType")}
+              
             >
               {commercialTypes[params.type]?.map((item, index) => (
                 <MenuItem value={item} key={index}>{item}</MenuItem>
               ))}
             </Select>
+            <p style={{color: "red"}}>{typeText}</p>
           </FormControl>
         </Grid>
 
@@ -445,6 +545,23 @@ const Page = ({params}) => {
           />
         </Grid>
 
+
+        <Grid item xs={12} sm={12}>
+          <h1
+          style={{fontWeight:"bold", fontSize:"18px", cursor:"pointer"}}
+          onClick={()=>setIsPublishHistoryOpen(!isPublishHistoryOpen)}>
+              {isPublishHistoryOpen ? "게재 기록 v" : "게재 기록 ^"}
+          </h1>
+          {isPublishHistoryOpen && 
+            <ul >
+              {values.publishHistory.map((item, index) => (
+                <li key={index}>
+                  {item}
+                </li>
+              ))}
+            </ul>
+          }
+        </Grid>
 
         <div className={styles.img_container}>
           <h1>광고 이미지</h1>
@@ -544,6 +661,16 @@ const Page = ({params}) => {
       {/* 연재정보 */}
       <div className={styles.company_container}>
         <h1>연재정보</h1>
+        <TextField
+          label="게재 횟수"
+          variant="standard"
+          error={error.type==="amount"}
+          helperText={error.type==="amount" && error.message}
+          value={values.amount}
+          onChange={(e)=>{handleValues("amount", e.target.value)}}
+          size="small"
+          sx={{mr:"15px"}}
+        />
         <TextField
           label="잔여 횟수"
           variant="standard"

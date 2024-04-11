@@ -10,9 +10,6 @@ import Loader from "src/public/components/Loader"
 import { TextField, Button } from "@mui/material"
 
 import { getTime } from "src/public/utils/getTime"
-import { GAROSUDATA } from "data/garosu"
-
-
 
 
 const Component = ({params}) => {
@@ -53,7 +50,8 @@ const Component = ({params}) => {
       for(let i = 0 ; i < arr.length; i++){
         for(let j = 0; j<arr[i].length; j++){
           if(arr[i][j]?.includes(value)) {
-            if(arr[i][0]==="box value")
+            if(arr[i][0]==="box value"){
+
               result.push({
                 mode:"fromBoxDB",
                 createdAt: arr[i][2],
@@ -62,7 +60,8 @@ const Component = ({params}) => {
                 size: arr[i][5],
                 id: i,
               })
-            else
+            }
+            else{
               result.push({
                 mode: "fromDB",
                 createdAt: arr[i][0],
@@ -71,6 +70,7 @@ const Component = ({params}) => {
                 phoneNumber: arr[i][12],
                 id: i
               })
+            }
           }
         }
       }
@@ -85,7 +85,7 @@ const Component = ({params}) => {
       return arr
     }
 
-    if(values.commercial !== "") {
+    if(values.commercial !== "" && values.commercial.length>=2) {
       setIsSearching(true)
       const INPUT = values.commercial
       const result = commercial[params.type]?.map((item) => {
@@ -97,16 +97,11 @@ const Component = ({params}) => {
           item.companyValues?.phoneNumber?.includes(INPUT))
           return(item)
       }).filter(Boolean)
-      let DBQUERY = []
-      if(params.type==="garosu")
-        DBQUERY = createArrayThatHasValue(GAROSUDATA, INPUT)
-      // else
-      //   DBQUERY = createArrayThatHasValue(ALIMBANG, INPUT)  
-      const SORTEDDBQUEYR = sortCreatedAtDesc(DBQUERY)
+    
       
-      setCommercialList([...result,...SORTEDDBQUEYR])
+      setCommercialList([...result])
       setIsSearching(false)
-    }
+    } else alert("검색은 3글자 이상부터여")
   }
 
 

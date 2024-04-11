@@ -167,7 +167,7 @@ const Home = () => {
   if(isLoading)
     return <Loader />
   
-  if(false)
+  if(true)
   return(
     <>
       <div className={styles.main_container}>
