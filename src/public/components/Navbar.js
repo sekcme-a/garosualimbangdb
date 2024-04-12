@@ -9,7 +9,7 @@ import Router from "next/router"
 import { auth } from "firebase/firebase"
 
 const Navbar = () => {
-  const {type, setType} = useData()
+  const {type, setType, user} = useData()
   const router = useRouter()
   const pathname = usePathname()
 
@@ -44,10 +44,18 @@ const Navbar = () => {
         className={pathname.includes("setting") ? `${styles.button} ${styles.setting} ${styles.selected}` : `${styles.button} ${styles.setting}`}>
           설정
       </div>
+      {user === null ? 
+          <div onClick={()=>router.push("/login")}
+            className={`${styles.button} ${styles.logout}`}>
+              로그인
+          </div>
+      :
+      
       <div onClick={onLogoutClick}
         className={`${styles.button} ${styles.logout}`}>
           로그아웃
       </div>
+      }
     </div>
   )
 }

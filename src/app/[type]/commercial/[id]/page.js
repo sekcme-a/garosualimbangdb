@@ -27,6 +27,7 @@ const Page = ({params}) => {
   const [isSaving, setIsSaving] = useState(false)
 
   const [prevContent, setPrevContent] = useState("")
+  const [prevPhone, setPrevPhone] = useState("")
 
   const [companyValues, setCompanyValues] = useState({
     name:"",
@@ -127,6 +128,7 @@ const Page = ({params}) => {
         setValues(commercialData)
         setCompanyValues(commercialData.companyValues)
         setPrevContent(commercialData.content)
+        setPrevPhone(commercialData.contact[1].content)
       }
       else{
         alert("없는 광고입니다.")
@@ -206,8 +208,10 @@ const Page = ({params}) => {
   }
   const onMinusClick = async () => {
     const unpaid = parseInt(values.unpaid)-parseInt(priceInput)
-    console.log(values.unpaid)
-    console.log(unpaid)
+    if(unpaid<0){
+      alert("미수금액은 마이너스가 될 수 없습니다.")
+      return;
+    }
     handleValues("paidHistory", [...values.paidHistory, {createdAt: new Date(), value: `-${priceInput}`, info: priceInfoInput, unpaid: unpaid}])
     handleValues("unpaid", unpaid)
     await db.collection("type").doc(params.type).collection("commercials").doc(params.id).update({
@@ -272,6 +276,57 @@ const Page = ({params}) => {
 
 
 
+  const handleEditorHistory = async (type) => {
+    let editorInfo = ""
+    if(values.content !== prevContent){
+      editorInfo +="[내용수정] "
+    }
+    if(values.contact[1].content !== prevPhone){
+      editorInfo += "[전번수정] "
+    }
+
+    let log = {
+      title: values.title,
+      content: values.content,
+      phone: values.contact[1].content,
+      newsType: values.newsType
+    }
+    if(type==="submit"){
+      if(values.mode==="게재중"){
+        if(editorInfo==="") return;
+        log={
+          ...log,
+          info: editorInfo,
+          text: "광고 수정"
+        }
+      }else return;
+    } else if(type==='publish'){
+      log={
+        ...log,
+        info: editorInfo,
+        text: `광고 게재됨. (전 상태:${values.mode}  )`
+      }
+    } else if (type==="hold"){
+      log={
+        ...log,
+        text: `광고 보류됨. (전 상태:${values.mode}  )`
+      }
+    } else if (type==="unpublish"){
+      log={
+        ...log,
+        text:`광고 게재취소됨. (전 상태:${values.mode}  )`
+      }
+    }
+
+    await db.collection(`${params.type}_history`).doc().set({
+      ...log,
+      createdAt: new Date(),
+      commercialId: params.id,
+      checked:false,
+    })
+  }
+
+
 
   //광고 저장
   const onSubmitClick= async() => {
@@ -280,9 +335,8 @@ const Page = ({params}) => {
 
     const newHistory = values.publishHistory
     if(values.content !== prevContent){
-          //내용이 바꼈다면 기록에 저장.
-    
-    newHistory.push(`${todayDate}일에 광고내용이 수정되었습니다. 전 광고 내용: ${prevContent}`)
+      //내용이 바꼈다면 기록에 저장.
+      newHistory.push(`${todayDate}일에 광고내용이 수정되었습니다. 전 광고 내용: ${prevContent}`)
     }
     await firebaseHooks.set_data(`type/${params.type}/commercials/${params.id}`, {
       ...values,
@@ -291,6 +345,7 @@ const Page = ({params}) => {
       remain: parseInt(values.remain),
       savedAt: new Date()
     })
+    await handleEditorHistory("submit")
     setIsSaving(false)
     setHasSaved(true)
   }
@@ -317,6 +372,7 @@ const Page = ({params}) => {
       })
       
       setValues({...values, publishHistory: newHistory, mode: "게재중"})
+      await handleEditorHistory("publish")
       alert("성공적으로 게재되었습니다.")
     }
   }
@@ -335,6 +391,7 @@ const Page = ({params}) => {
         holdAt: new Date()
       })
       setValues({...values, publishHistory: newHistory, mode: "보류중"})
+      await handleEditorHistory("hold")
       alert("성공적으로 보류되었습니다.")
     }
   }
@@ -353,6 +410,7 @@ const Page = ({params}) => {
         unpublishedAt: new Date()
       })
       setValues({...values, publishHistory: newHistory, mode: "게재중지"})
+      await handleEditorHistory("unpublish")
       alert("성공적으로 게재중지되었습니다.")
     }
   }

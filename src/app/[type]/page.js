@@ -9,6 +9,7 @@ import Loader from "src/public/components/Loader"
 
 import { Button, TextField, Grid } from "@mui/material"
 import { firestore as db } from "firebase/firebase"
+import Image from "next/image"
 
 const Component = ({params}) => {
   const {user} = useData()
@@ -73,6 +74,27 @@ const Component = ({params}) => {
           console.error("Error updating documents:", error);
           alert("에러")
         });
+    }
+  }
+
+
+
+  const onResetHistoryClick = async () => {
+
+    if(confirm(`
+    현 재의 편집을 초기화하셔서 생긴 손해엔
+    민 사적인 책임을 지지 않으며,
+    바 로 얘기해도 삭제된 내용은 복구되지 않기에
+    보 수가 가능하지 않습니다.`)){
+      const colRef = await db.collection(`${params.type}_history`).get()
+      if(!colRef.empty){
+        const batch = db.batch()
+        colRef.forEach(doc => {
+          batch.delete(doc.ref)
+        })
+        await batch.commit()
+      }
+      alert("초기화됬쪄")
     }
   }
 
@@ -178,6 +200,31 @@ const Component = ({params}) => {
           <p>마지막 마감일: {lastMagam}</p>
         </Grid>
 
+        <Grid item xs={6} sm={2}>
+          <Button
+            variant="contained"
+            onClick={onResetHistoryClick}
+            color="error"
+            sx={{ml:"15px"}}
+          >
+            편집 기록 초기화
+          </Button>
+        </Grid>
+
+        <Grid item xs={12}>
+          <Image
+            style={{cursor:"pointer"}}
+            src="/hyunsur.png"
+            alt=""
+            width={300}
+            height={300}
+            onClick={()=>{
+              if(confirm("현서를 숭배하십니까?")){
+                router.push(`/${params.type}/editHistory`)
+              }else alert("꺼져그럼")
+            }}
+          />
+        </Grid>
 
 
       </Grid>
