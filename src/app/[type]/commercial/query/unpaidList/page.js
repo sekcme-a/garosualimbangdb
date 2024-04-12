@@ -35,7 +35,7 @@ const Component = ({params}) => {
 
   useEffect(()=>{
     const fetchData = async () => {
-      const data = await db.collection("type").doc(params.type).collection("commercials").where("unpaid", "!=", 0).get()
+      const data = await db.collection("type").doc(params.type).collection("commercials").where("unpaid", ">", 0).get()
       console.log(data.docs)
       const list = data.docs.map(doc => ({...doc.data(), id: doc.id}))
       setCommercialList(list)

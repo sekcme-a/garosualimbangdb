@@ -26,6 +26,8 @@ const Page = ({params}) => {
   const [isImgLoading, setIsImgLoading] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
 
+  const [prevContent, setPrevContent] = useState("")
+
   const [companyValues, setCompanyValues] = useState({
     name:"",
     companyName:"",
@@ -88,9 +90,10 @@ const Page = ({params}) => {
     imgUrl:"",
     type:"구인"
   })
+
   const onValuesChange = (prop) => (event) => {
     const jobTypes = ['기술/생산직','사무/경리','전문직','교사강사/교육정보','영업직','서비스직','운전직','배달직','현장직','아르바이트/기타구인','요리음식업','유흥서비스업']
-    const houseTypes = ['주택매매','주택임대','상가매매','상가임대','공장매매','공장임대','창고매매','창고임대','기타매매','기타임대']
+    const houseTypes = ['아파트임대','아파트매매','빌라임대','빌라매매','주택매매','주택임대','상가매매','상가임대','공장매매','공장임대','창고매매','창고임대','기타매매','기타임대']
     const carTypes = ['현대','기아','르노코리아','쌍용','쉐보래(대우)','기타']
 
     setValues(prevValues => ({...prevValues, [prop]: event.target.value}))
@@ -123,6 +126,7 @@ const Page = ({params}) => {
       if(commercialData){
         setValues(commercialData)
         setCompanyValues(commercialData.companyValues)
+        setPrevContent(commercialData.content)
       }
       else{
         alert("없는 광고입니다.")
@@ -268,11 +272,21 @@ const Page = ({params}) => {
 
 
 
+
   //광고 저장
   const onSubmitClick= async() => {
     setIsSaving(true)
+
+
+    const newHistory = values.publishHistory
+    if(values.content !== prevContent){
+          //내용이 바꼈다면 기록에 저장.
+    
+    newHistory.push(`${todayDate}일에 광고내용이 수정되었습니다. 전 광고 내용: ${prevContent}`)
+    }
     await firebaseHooks.set_data(`type/${params.type}/commercials/${params.id}`, {
       ...values,
+      publishHistory: newHistory,
       companyValues: companyValues,
       remain: parseInt(values.remain),
       savedAt: new Date()
@@ -365,6 +379,10 @@ const Page = ({params}) => {
 
 
   const onDeleteClick = async () => {
+    if(values.mode==='게재중'){
+      alert("게재중이 광고는 삭제할수 없답니다? 게재중지 시키고 삭제하시지말입니다?")
+      return
+    }
     if(confirm("나를 진짜 삭제할꺼야? 흐규")){
       await db.collection("type").doc(params.type).collection("commercials").doc(params.id).delete()
       alert("삭제되었습니다.")
@@ -570,7 +588,7 @@ const Page = ({params}) => {
           {isPublishHistoryOpen && 
             <ul >
               {values.publishHistory.map((item, index) => (
-                <li key={index}>
+                <li key={index} style={{padding: '5px 0', borderBottom:"1px solid rgb(200,200,200)"}}>
                   {item}
                 </li>
               ))}
