@@ -273,6 +273,7 @@ const Page = ({params}) => {
     setIsSaving(true)
     await firebaseHooks.set_data(`type/${params.type}/commercials/${params.id}`, {
       ...values,
+      companyValues: companyValues,
       remain: parseInt(values.remain),
       savedAt: new Date()
     })
@@ -294,6 +295,7 @@ const Page = ({params}) => {
       newHistory.push(`${todayDate}일 부터 잔여횟수 ${values.remain}회 게재시작되었습니다.`)
       await db.collection("type").doc(params.type).collection("commercials").doc(params.id).update({
         ...values,
+        companyValues: companyValues,
         remain: parseInt(values.remain),
         publishHistory: newHistory,
         mode: "게재중",
@@ -312,6 +314,7 @@ const Page = ({params}) => {
       newHistory.push(`${todayDate}일 부터 보류되었습니다.`)
       await db.collection("type").doc(params.type).collection("commercials").doc(params.id).update({
         ...values,
+        companyValues: companyValues,
         remain: parseInt(values.remain),
         publishHistory: newHistory,
         mode: "보류중",
@@ -329,6 +332,7 @@ const Page = ({params}) => {
       newHistory.push(`${todayDate}일 부터 게재중지되었습니다.`)
       await db.collection("type").doc(params.type).collection("commercials").doc(params.id).update({
         ...values,
+        companyValues: companyValues,
         remain: parseInt(values.remain),
         publishHistory: newHistory,
         mode: "게재중지",
@@ -345,6 +349,7 @@ const Page = ({params}) => {
       const randomId = await firebaseHooks.get_random_id()
       await db.collection("type").doc(params.type).collection("commercials").doc(randomId).set({
         ...values,
+        companyValues: companyValues,
         title: `${values.title}-복사본`,
         mode:"",
         savedAt: new Date(),
@@ -383,6 +388,7 @@ const Page = ({params}) => {
             label="업체명"
             variant="standard"
             value={companyValues?.companyName}
+            onChange={(e) => setCompanyValues(prev => ({...prev, companyName: e.target.value }))}
             size="small"
             fullWidth
           />
@@ -393,6 +399,7 @@ const Page = ({params}) => {
             label="광고주 명"
             variant="standard"
             value={companyValues?.name}
+            onChange={(e) => setCompanyValues(prev => ({...prev, companyName: e.target.value }))}
             size="small"
             fullWidth
           />
@@ -403,6 +410,7 @@ const Page = ({params}) => {
             label="업체 전화번호"
             variant="standard"
             value={companyValues?.phoneNumber}
+            onChange={(e) => setCompanyValues(prev => ({...prev, phoneNumber: e.target.value }))}
             size="small"
             fullWidth
           />
@@ -413,6 +421,7 @@ const Page = ({params}) => {
             label="업체 메모"
             variant="standard"
             value={companyValues?.memo}
+            onChange={(e) => setCompanyValues(prev => ({...prev, memo: e.target.value }))}
             size="small"
             fullWidth
             multiline

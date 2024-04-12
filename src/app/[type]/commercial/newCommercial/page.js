@@ -315,6 +315,7 @@ const Page = ({params}) => {
 
   //광고 저장
   const onSubmitClick= async() => {
+    // if(!companyValues.companyName)
     setIsSaving(true)
     await firebaseHooks.set_data(`type/${params.type}/commercials/${commercialId}`, {
       ...values,
