@@ -64,9 +64,9 @@ const Page = ({params}) => {
     newsType: "줄",
     level: "일반 구인",
     info: [
-      {title: '경력', content:'경력무관'},
-      {title: '연령', content:'무관'},
-      {title: '경력', content:'무관'},
+      {title: '경력', content:''},
+      {title: '연령', content:''},
+      {title: '경력', content:''},
       {title: '모집직종', content:''},
       {title: '고용형태', content:''},
       {title: '모집인원', content:''},
