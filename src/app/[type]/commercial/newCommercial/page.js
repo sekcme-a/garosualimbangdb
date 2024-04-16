@@ -85,7 +85,7 @@ const Page = ({params}) => {
     ],
     condition: [
       {title: '급여', content:''},
-      {title: '근무요일', content:''},
+      {title: '모집분야', content:''},
       {title: '근무시간', content:''},
     ],
     contact: [
@@ -103,7 +103,7 @@ const Page = ({params}) => {
     type:"구인"
   })
   const onValuesChange = (prop) => (event) => {
-    const jobTypes = ['기술/생산직','사무/경리','전문직','교사강사/교육정보','영업직','서비스직','운전직','배달직','현장직','아르바이트/기타구인','요리음식업','유흥서비스업']
+    const jobTypes = ['기술/생산직','사무/경리','전문직','홍보','영업직','서비스직','운전직','배달직','현장직','아르바이트/기타구인','요리음식업','유흥서비스업']
     const houseTypes = ['아파트임대','아파트매매','빌라임대','빌라매매','주택매매','주택임대','상가매매','상가임대','공장매매','공장임대','창고매매','창고임대','기타매매','기타임대']
     const carTypes = ['현대','기아','르노코리아','쌍용','쉐보래(대우)','기타']
     setValues(prevValues => ({...prevValues, [prop]: event.target.value}))
@@ -497,12 +497,11 @@ const Page = ({params}) => {
               label="웹사이트 광고 등급"
               onChange={onValuesChange("level")}
             >
-                <MenuItem value={"일반 구인"}>일반 구인</MenuItem>
-                <MenuItem value={"일반+ 구인"}>일반+ 구인</MenuItem>
-                <MenuItem value={"스페셜 구인"}>스페셜 구인</MenuItem>
-                <MenuItem value={"스페셜+ 구인"}>스페셜+ 구인</MenuItem>
-                <MenuItem value={"프리미엄 구인"}>프리미엄 구인</MenuItem>
-                <MenuItem value={"긴급 구인"}>긴급 구인</MenuItem>
+                <MenuItem value={"일반 구인"}>{`일반 구인 (줄)`}</MenuItem>
+                <MenuItem value={"일반+ 구인"}>{`일반+ 구인 (찬스)`}</MenuItem>
+                <MenuItem value={"스페셜 구인"}>{`스페셜 구인 (박스 1*5)`}</MenuItem>
+                <MenuItem value={"스페셜+ 구인"}>{`스페셜+ 구인 (박스 2*5이상)`}</MenuItem>
+                <MenuItem value={"프리미엄 구인"}>{`프리미엄 구인 (1면,빽면)`}</MenuItem>
             </Select>
           </FormControl>
         </Grid>
@@ -722,7 +721,7 @@ const Page = ({params}) => {
         </Grid>
         <Grid item xs={12} sm={3}>
           <TextField
-            label={values.type==="구인" ? "요일" : values.type==="중고차" ? "연식":"유형"}
+            label={values.type==="구인" ? "모집분야" : values.type==="중고차" ? "연식":"유형"}
             fullWidth
             variant="standard"
             value={values.date}

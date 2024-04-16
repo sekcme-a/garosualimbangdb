@@ -104,7 +104,7 @@ const Component = ({params}) => {
   return(
     <div className={styles.main_container}>
       <Grid container spacing={3}>
-        <Grid item xs={6} sm={2}>
+        {/* <Grid item xs={6} sm={2}>
           <Button
             variant="contained"
             onClick={onNewCompanyClick}
@@ -121,7 +121,7 @@ const Component = ({params}) => {
           >
             광고주 검색
           </Button>
-        </Grid>
+        </Grid> */}
 
 
         <Grid item xs={6} sm={2}>
