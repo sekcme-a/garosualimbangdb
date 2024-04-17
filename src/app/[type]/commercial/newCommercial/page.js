@@ -155,9 +155,9 @@ const Page = ({params}) => {
         const obj = JSON.parse(copiedText);
     setCompanyValues(prev => ({
       ...prev,
-      companyName: obj.name,
-      name: obj.client,
-      phoneNumber: obj.phoneNumber,
+      companyName: obj.name ?? "",
+      name: obj.client ?? "",
+      phoneNumber: obj.phoneNumber ?? "",
       memo: ""
     }))
 

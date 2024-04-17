@@ -11,13 +11,14 @@ import { TextField, Button } from "@mui/material"
 
 import { getTime } from "src/public/utils/getTime"
 import { firestore as db } from "firebase/firebase"
+import { ConsoleNetworkOutline } from "mdi-material-ui"
 
 
 
 const Component = ({params}) => {
   const {commercial} = useData()
   const router = useRouter()
-  const [isLoading, setIsLoading] = useState(true)
+  const [isLoading, setIsLoading] = useState(false)
   const [isSearching, setIsSearching] = useState(false)
   const [commercialList, setCommercialList] = useState([])
   const [selected, setSelected] = useState([])
@@ -33,42 +34,6 @@ const Component = ({params}) => {
   }
   //for inputs*****
 
-  useEffect(()=>{
-    const fetchData = async () => {
-      const data = await db.collection("type").doc(params.type).collection("commercials").where("unpaid", ">", 0).get()
-      console.log(data.docs)
-      const list = data.docs.map(doc => ({...doc.data(), id: doc.id}))
-      setCommercialList(list)
-      setIsLoading(false)
-    }
-    fetchData()
-  },[])
-
-
-  const handleKeyDown = (event) => {
-    if(event.key==="Enter")
-      onSearchClick()
-  }
-  const onSearchClick = () => {
-    if(values.commercial !== "") {
-      console.log(commercial)
-      setIsSearching(true)
-      const INPUT = values.commercial
-      const result = commercial[params.type].map((item) => {
-        if(item.title?.includes(INPUT) ||
-          item.content?.includes(INPUT) ||
-          item.phoneNumber?.includes(INPUT) ||
-          item.companyValues?.companyName?.includes(INPUT)||
-          item.companyValues?.name?.includes(INPUT)||
-          item.companyValues?.phoneNumber?.includes(INPUT))
-          return(item)
-      }).filter(Boolean)
-      console.log(result)
-      setCommercialList(result)
-      setIsSearching(false)
-    }
-  }
-
 
   const onCommercialClick = (id) => {
     router.push(`/${params.type}/commercial/${id}`)
@@ -82,7 +47,8 @@ const Component = ({params}) => {
 
 
       <ul className={styles.list_container} style={{marginTop:"20px"}}>
-        {commercialList.map((item, index) => {
+        {commercial[params.type]?.map((item, index) => {
+          if(parseInt(item.unpaid) > 0){
           return(
             <li key={index} onClick={()=>onCommercialClick(item.id)}>
               <h4>{item.mode}</h4>
@@ -92,9 +58,10 @@ const Component = ({params}) => {
               <p>마지막 저장일: {getTime.YYYYMMDD(item.savedAt)}</p>
             </li>
           )
+          }
         })}
 
-      </ul>
+      </ul> 
       <Button
         variant="contained"
         onClick={()=>router.back()}
