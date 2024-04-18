@@ -57,9 +57,9 @@ const FileUploaderRestrictions = ({setImgURL, path, imgURL, setIsLoading}) => {
   const { getRootProps, getInputProps } = useDropzone({
     maxFiles: 8,
     maxSize: 20000000,
-    accept: {
-      'image/*': ['.png', '.jpg', '.jpeg', '.gif']
-    },
+    // accept: {
+    //   'image/*': ['.png', '.jpg', '.jpeg', '.gif']
+    // },
     onDrop: acceptedFiles => {
       setFiles(acceptedFiles.map(file => Object.assign(file)))
     },

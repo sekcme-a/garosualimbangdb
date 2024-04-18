@@ -25,7 +25,7 @@ const Banner = ({params}) => {
 
     const fetchData = async () => {
       setRandomId(uuidv4())
-      const snapShot = await db.collection("type").doc(params.type).collection("banners").get()
+      const snapShot = await db.collection("type").doc(params.type).collection("banners").orderBy("savedAt", "desc").get()
 
       if(!snapShot.empty){
         const list = snapShot.docs.map(doc => ({...doc.data(), id: doc.id}))

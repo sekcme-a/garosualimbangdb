@@ -200,6 +200,17 @@ const Component = ({params}) => {
         </Grid>
 
 
+        <Grid item xs={6} sm={2}>
+          <Button
+            variant="contained"
+            onClick={()=> router.push(`/${params.type}/newspaper`)}
+            sx={{ml:"15px"}}
+          >
+            신문 완성본 입력
+          </Button>
+        </Grid>
+
+
 
         <Grid item xs={6} sm={2}>
           <Button

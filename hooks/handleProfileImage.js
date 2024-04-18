@@ -48,6 +48,7 @@ export const handleProfileImage = async (img, path,maxMB) => {
             const url = await firebaseHooks.upload_image_to_storage(image, path)
             resolve(url)
           } else {
+            console.log(image, path)
             const url = await firebaseHooks.upload_image_to_storage(image, path)
             resolve(url)
           }
