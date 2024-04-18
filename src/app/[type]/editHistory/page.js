@@ -6,12 +6,15 @@ import { useState,useEffect } from "react"
 
 import Link from "next/link"
 
+import DropperImage from "src/public/components/DropperImage"
 
 const EditHistory = ({params}) => {
 
   const [page, setPage] = useState(0)
   const [history, setHistory] = useState([])
   const [isLoading, setIsLoading] = useState(true)
+  const [isImgLoading, setIsImgLoading] = useState(false)
+
 
   const fetchData = async () => {
     const snapShot = await db.collection(`${params.type}_history`).orderBy("createdAt", "asc").get()
@@ -37,11 +40,6 @@ const EditHistory = ({params}) => {
 
   const onCheckClick = async (checked) => {
 
-
-    if(history[page].newsType==="박스+줄"||history[page].newsType==="찬스"||history[page].newsType==="줄"){
-       if(!checked)
-        if(!confirm(`해당 광고는 줄이 포함되있노라. 줄도 수정했는지 확인해보고 확인을 눌러라.`)) return 
-    }
     await db.collection(`${params.type}_history`).doc(history[page].id).update({checked: !checked})
 
     const list = history.map((item, index) => {
@@ -55,6 +53,10 @@ const EditHistory = ({params}) => {
   }
 
   const onNextClick = async () => {
+    if(isImgLoading){
+      alert("이미지 로딩중이라고 했지 않았느냐")
+      return
+    }
     if(history.length-1 < page+1){
       alert("불러온 광고 중 마지막 광고다. 더 수정사항이 있나 찾아보겠노라.(확인을 눌러라 닝겐)")
 
@@ -68,6 +70,12 @@ const EditHistory = ({params}) => {
     }
 
 
+  }
+
+
+  const handleImg = (url) => {
+    let list = history
+    list[page] = {...list[page], commercialUrl: url}
   }
 
   if(isLoading){
@@ -97,7 +105,9 @@ const EditHistory = ({params}) => {
       <div style={{marginTop:"20px", fontSize:"20px", cursor:"pointer"}} onClick={()=>onCheckClick(history[page].checked)}>
         {history[page].checked ? "체크취소" : "체크하기"}
       </div>
-
+      {console.log(history[page].commercialId)}
+      <DropperImage imgUrl={history[page].commercialUrl} setImgURL={(url)=>handleImg(url)} path={`${params.type}/commercial/${history[page].commercialId}`} setIsLoading={setIsImgLoading}/>
+      {isImgLoading && <p>이미지 로딩중이니 기다리거라..</p>}
       <div style={{marginTop:"30px", display:"flex", justifyContent:"space-between"}}>
         {page!==0 && <div onClick={()=>setPage(prev => prev-1)} style={{cursor:"pointer", fontSize:"20px"}}>{`< 이전광고`}</div>}
         <div onClick={onNextClick}  style={{cursor:"pointer", fontSize:"20px"}}>{`다음광고 >`}</div>

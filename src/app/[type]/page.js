@@ -188,6 +188,19 @@ const Component = ({params}) => {
           </Button>
         </Grid>
 
+
+        <Grid item xs={6} sm={2}>
+          <Button
+            variant="contained"
+            onClick={()=> router.push(`/${params.type}/banner`)}
+            sx={{ml:"15px"}}
+          >
+            배너 광고 편집
+          </Button>
+        </Grid>
+
+
+
         <Grid item xs={6} sm={2}>
           <Button
             variant="contained"

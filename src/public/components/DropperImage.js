@@ -144,10 +144,26 @@ function formatBytes(bytes, decimals = 2) {
     setFiles([])
   }
 
+  const handlePaste = (event) => {
+    const items = (event.clipboardData || event.originalEvent.clipboardData).items;
+    for (let i = 0; i < items.length; i++) {
+      if (items[i].type.indexOf('image') !== -1) {
+        const blob = items[i].getAsFile();
+        console.log(Object.assign(blob))
+        setFiles([Object.assign(blob)]);
+        break; // Assuming you only want to handle one image at a time
+      }
+    }
+  };
+
+
+
+
   return (
     <div className={styles.image_container} style={{flexWrap:"wrap"}}>
       {/* <div className={styles.title_container}>
         <h1>썸네일 업로드</h1> */}
+        <div onPaste={handlePaste}style={{width:"100px", height:"100px", border:"1px solid black"}}/>
         <div {...getRootProps({ className: 'dropzone' })}>
           <div className={styles.dropzone_container}>
             <input {...getInputProps()} />

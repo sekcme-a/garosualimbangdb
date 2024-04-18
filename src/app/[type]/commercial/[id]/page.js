@@ -448,8 +448,6 @@ const Page = ({params}) => {
     }
   }
 
-
-
   if(isLoading)
     return <Loader />
   
@@ -669,6 +667,7 @@ const Page = ({params}) => {
             </div>
             </a>
           }
+          
           <DropperImage imgUrl={values.commercialUrl} setImgURL={(url)=>handleValues("commercialUrl", url)} path={`${params.type}/commercial/${params.id}`} setIsLoading={setIsImgLoading}/>
 
         </div>
