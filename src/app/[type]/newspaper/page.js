@@ -91,7 +91,6 @@ const Newspaper = ({params}) => {
 
   return(
     <>
-      <p>12개 보다 많아지면 자동으로 1개씩 삭제됨. 혹시 잘못올리거나 했을 경우 삭제를 통해 삭제.</p>
 
 
       <h1 style={{marginTop:"20px"}}>신문 pdf 올리기:</h1>

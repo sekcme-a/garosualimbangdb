@@ -210,6 +210,16 @@ const Component = ({params}) => {
           </Button>
         </Grid>
 
+        <Grid item xs={6} sm={2}>
+          <Button
+            variant="contained"
+            onClick={()=> router.push(`/${params.type}/money`)}
+            sx={{ml:"15px"}}
+          >
+            두근두근 항상 설래는 수익
+          </Button>
+        </Grid>
+
 
 
         <Grid item xs={6} sm={2}>

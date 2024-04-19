@@ -198,14 +198,28 @@ const Page = ({params}) => {
     console.log(unpaid)
     handleValues("paidHistory", [...values.paidHistory, {createdAt: new Date(), value: `+${priceInput}`, info: priceInfoInput, unpaid: unpaid}])
     handleValues("unpaid", unpaid)
-    await db.collection("type").doc(params.type).collection("commercials").doc(params.id).update({
+    const batch = db.batch()
+    batch.update(db.collection("type").doc(params.type).collection("commercials").doc(params.id),{
       unpaid: unpaid,
       paidHistory: [...values.paidHistory, {createdAt: new Date(), value: priceInput, info: priceInfoInput, unpaid: unpaid}]
     })
+
+    batch.set(db.collection("type").doc(params.type).collection("money").doc(),{
+      title: values.title,
+      content: values.content,
+      createdAt: new Date(),
+      YYYYMM: new Date().toISOString().slice(0, 7).replace(/-/g, ''),
+      earned: priceInput,
+      docId: params.id
+    })
+
+    await batch.commit()
     setPriceInput("")
     setPriceInfoInput("")
     alert("금액이 추가되었습니다.")
   }
+
+
   const onMinusClick = async () => {
     const unpaid = parseInt(values.unpaid)-parseInt(priceInput)
     if(unpaid<0){
@@ -473,7 +487,7 @@ const Page = ({params}) => {
             label="광고주 명"
             variant="standard"
             value={companyValues?.name}
-            onChange={(e) => setCompanyValues(prev => ({...prev, companyName: e.target.value }))}
+            onChange={(e) => setCompanyValues(prev => ({...prev, name: e.target.value }))}
             size="small"
             fullWidth
           />
