@@ -5,6 +5,7 @@ import { useState } from "react"
 
 
 import { firestore as db } from "firebase/firebase"
+import { useRouter } from "next/navigation"
 
 const Money = ({params}) => {
   const [input, setInput] = useState("")
@@ -14,6 +15,7 @@ const Money = ({params}) => {
   const [asdf, setAsdf] = useState(0)
 
   const [money, setMoney] = useState(0)
+  const router = useRouter()
 
   
   const onSearchClick = async () => {
@@ -81,7 +83,7 @@ const Money = ({params}) => {
         {money!==0 && <p style={{fontWeight:"bold", marginBottom:"10px"}}>총 {money}원을 버셨습니다. 이정도 벌었으면 현서에게 용돈을 주는 것을 고려해보지 아니할수가 없지 않은 부분입니다.</p>}
       {list.map((item, index) => {
         return(
-          <Grid item xs={12} key={index} style={{display:"flex", justifyContent:"space-between", padding: "10px", borderRadius:"5px", border:"1px solid black"}}>
+          <Grid item xs={12} key={index} style={{display:"flex", justifyContent:"space-between", padding: "10px", borderRadius:"5px", border:"1px solid black"}} onClick={()=>router.push(`/${params.type}/commercial/${item.docId}`)}>
             <p style={{marginRight:"5px"}}>{item.title}</p>
             <p style={{marginRight:"5px"}}>{item.content.substr(0,20)}</p>
             <p style={{marginRight:"5px", fontWeight:"bold"}}>{item.earned}원</p>
